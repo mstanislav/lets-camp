@@ -16,3 +16,7 @@ tmp
 .yardoc
 _yardoc
 doc/
+
+# Ruby Motion
+build/
+.repl_history
