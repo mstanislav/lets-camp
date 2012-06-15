@@ -4,5 +4,7 @@ require 'motion/project'
 
 Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
-  app.name = 'lets-camp'
+  app.name = "Let's Camp"
+  app.interface_orientations = [:portrait]
+  app.frameworks += ['CoreData','CoreImage']
 end
