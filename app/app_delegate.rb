@@ -2,10 +2,18 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     @mapController                      = MapController.alloc.init
     @mapController.tabBarItem.title     = 'Campsite Map'
-    @mapController.tabBarItem.image     = UIImage.imageNamed('map_button_icon.png')
+    @mapController.tabBarItem.image     = UIImage.imageNamed('map.png')
+
+    @suppliesController                   = SuppliesController.alloc.init
+    @suppliesController.tabBarItem.title  = 'Supplies'
+    @suppliesController.tabBarItem.image  = UIImage.imageNamed('list.png')
+
+    @foodController                   = FoodController.alloc.init
+    @foodController.tabBarItem.title  = 'Food'
+    @foodController.tabBarItem.image  = UIImage.imageNamed('pizza.png')
 
     tabbar                             = UITabBarController.alloc.init
-    tabbar.viewControllers             = [@mapController]
+    tabbar.viewControllers             = [@mapController,@suppliesController,@foodController]
     tabbar.selectedIndex               = 0
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
