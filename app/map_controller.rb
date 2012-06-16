@@ -1,15 +1,22 @@
 class MapController < UIViewController
+  $default_address = '1600 Pennsylvania Ave NW Washington DC'
+  $address = ''
 
   def viewDidLoad
-    @@lat, @@lng = getCoordinates("1600%20Pennsylvania%20Avenue%20Washington%20DC")
+    drawMap($default_address)
+  end
+
+  def drawMap(address)
+    @@lat, @@lng = getCoordinates(view.url_encode(address))
     coordinate = CLLocationCoordinate2D.new(@@lat,@@lng)
 
     mapView = MKMapView.alloc.initWithFrame(view.bounds)
     mapView.delegate = self
-    view.addSubview(mapView)
 
     setRegion(mapView, coordinate)
     setPin(mapView, coordinate)
+  
+    view.addSubview(mapView)
   end
 
   def getCoordinates(address)
@@ -25,12 +32,12 @@ class MapController < UIViewController
     unless json
       raise error_ptr[0]
     end
-
+  
     return [json['results'].first[:geometry][:location][:lat],json['results'].first[:geometry][:location][:lng]]
   end
 
   def setRegion(map, coordinate)
-    span = MKCoordinateSpan.new(0.52, 0.52)
+    span = MKCoordinateSpan.new(0.1, 0.1)
     region = MKCoordinateRegion.new(coordinate, span)
     map.setRegion(region, animated: "YES")
   end
@@ -39,7 +46,7 @@ class MapController < UIViewController
     marker = MKPointAnnotation.alloc.init
     marker.setCoordinate(coordinate)
 
-    pin_view = MKPinAnnotationView.alloc.initWithAnnotation(@marker, reuseIdentifier: "id")
+    pin_view = MKPinAnnotationView.alloc.initWithAnnotation(marker, reuseIdentifier: "id")
     pin_view.animatesDrop = true
 
     map.addAnnotation(marker)
