@@ -1,4 +1,6 @@
 class MapController < UIViewController
+  attr_accessor :window
+
   $default_address = '1600 Pennsylvania Ave NW Washington DC'
 
   def viewDidLoad
@@ -10,6 +12,12 @@ class MapController < UIViewController
     end
 
     drawMap(address)
+  end
+
+  def viewWillAppear(animated)
+    @window.rootViewController.navigationBar.topItem.title = "Let's Camp"
+    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Settings', style: 0, target: UIApplication.sharedApplication.delegate, action: "settings")
+    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
   end
 
   def drawMap(address)
