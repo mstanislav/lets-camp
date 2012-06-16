@@ -20,3 +20,6 @@ doc/
 # Ruby Motion
 build/
 .repl_history
+vendor/NanoStoreInMotion/
+vendor/Podfile.lock
+vendor/Pods/

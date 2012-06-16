@@ -27,8 +27,8 @@ class SettingsController < UIViewController
 
   def set_address
     @address_input.resignFirstResponder
-    $address = @address_input.text != '' ? @address_input.text : $default_address
-    @map.drawMap($address)
+    address = @address_input.text != '' ? @address_input.text : MapPin.all.first.address
+    @map.drawMap(address)
   end
 
   def textFieldShouldReturn(text_field)
@@ -39,7 +39,7 @@ private
   def add_text_field(params)
     text_field = UITextField.new
     text_field.font = UIFont.systemFontOfSize(16)
-    text_field.text = $address != '' ? $address : $default_address
+    text_field.text = MapPin.all.first.address
     text_field.textAlignment = UITextAlignmentCenter
     text_field.textColor = UIColor.blackColor
     text_field.backgroundColor = UIColor.whiteColor

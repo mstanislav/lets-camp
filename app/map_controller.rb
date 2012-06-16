@@ -1,13 +1,22 @@
 class MapController < UIViewController
   $default_address = '1600 Pennsylvania Ave NW Washington DC'
-  $address = ''
 
   def viewDidLoad
-    drawMap($default_address)
+    address = MapPin.all.first.address 
+
+    if address == nil
+      MapPin.create(:address => $default_address, :created_at => Time.now)
+      address = MapPin.all.first.address 
+    end
+
+    drawMap(address)
   end
 
   def drawMap(address)
+    saveMapPin(address)
+
     @@lat, @@lng = getCoordinates(view.url_encode(address))
+    checkCoordinates
     coordinate = CLLocationCoordinate2D.new(@@lat,@@lng)
 
     mapView = MKMapView.alloc.initWithFrame(view.bounds)
@@ -17,6 +26,22 @@ class MapController < UIViewController
     setPin(mapView, coordinate)
   
     view.addSubview(mapView)
+  end
+
+  def checkCoordinates
+    if @@lat == nil or @@lng == nil
+      pin = MapPin.all.first
+      pin.address = $default_address
+      pin.save
+
+      @@lat, @@lng = getCoordinates(view.url_encode($default_address))
+    end
+  end
+
+  def saveMapPin(address)
+    pin = MapPin.all.first
+    pin.address = address
+    pin.save
   end
 
   def getCoordinates(address)
@@ -32,7 +57,11 @@ class MapController < UIViewController
     unless json
       raise error_ptr[0]
     end
-  
+   
+    if json == nil or json['results'].size < 1
+      return false
+    end
+    
     return [json['results'].first[:geometry][:location][:lat],json['results'].first[:geometry][:location][:lng]]
   end
 

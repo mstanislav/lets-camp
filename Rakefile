@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
 $:.unshift("/Library/RubyMotion/lib")
 require 'motion/project'
+require 'rubygems'
+require 'motion-cocoapods'
+require 'nano-store'
+require 'bubble-wrap'
 
 Motion::Project::App.setup do |app|
-  # Use `rake config' to see complete project settings.
   app.name = "Let's Camp"
   app.interface_orientations = [:portrait]
   app.frameworks += ['CoreLocation', 'MapKit', 'CoreData', 'QuartzCore','CoreImage']
+
+  app.pods do
+    dependency 'NanoStore', '~> 2.1.4'
+  end
 end

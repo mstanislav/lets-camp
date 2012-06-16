@@ -1,20 +1,22 @@
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    @mapController                      = MapController.alloc.init
-    @mapController.tabBarItem.title     = 'Campsite Map'
-    @mapController.tabBarItem.image     = UIImage.imageNamed('map.png')
+    NanoStore.shared_store = NanoStore.store(:file, App.documents_path + "/letscamp.db")
 
-    @suppliesController                   = SuppliesController.alloc.init
-    @suppliesController.tabBarItem.title  = 'Supplies'
-    @suppliesController.tabBarItem.image  = UIImage.imageNamed('list.png')
+    @mapController = MapController.alloc.init
+    @mapController.tabBarItem.title = 'Campsite Map'
+    @mapController.tabBarItem.image = UIImage.imageNamed('map.png')
 
-    @foodController                   = FoodController.alloc.init
-    @foodController.tabBarItem.title  = 'Food'
-    @foodController.tabBarItem.image  = UIImage.imageNamed('pizza.png')
+    @suppliesController = SuppliesController.alloc.init
+    @suppliesController.tabBarItem.title = 'Supplies'
+    @suppliesController.tabBarItem.image = UIImage.imageNamed('list.png')
 
-    tabbar                             = UITabBarController.alloc.init
-    tabbar.viewControllers             = [@mapController,@suppliesController,@foodController]
-    tabbar.selectedIndex               = 0
+    @foodController = FoodController.alloc.init
+    @foodController.tabBarItem.title = 'Food'
+    @foodController.tabBarItem.image = UIImage.imageNamed('pizza.png')
+
+    tabbar = UITabBarController.alloc.init
+    tabbar.viewControllers = [@mapController,@suppliesController,@foodController]
+    tabbar.selectedIndex = 0
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @window.rootViewController = UINavigationController.alloc.initWithRootViewController(tabbar)
