@@ -4,25 +4,32 @@ class SettingsController < UIViewController
   def viewDidLoad
     self.view.backgroundColor = UIColor.underPageBackgroundColor
     address_input
+    reset_buttons
   end
 
   def address_input
-    address_input_label = UILabel.new
-    address_input_label.font = UIFont.systemFontOfSize(18)
-    address_input_label.text = "Enter a Campground Address"
-    address_input_label.textAlignment = UITextAlignmentCenter
-    address_input_label.textColor = UIColor.blackColor
-    address_input_label.backgroundColor = UIColor.clearColor
-    address_input_label.frame = [[10, 5], [250, 40]]
-    view.addSubview(address_input_label)
-
-    @address_input = add_text_field(frame: [[10, 45], [245, 30]])
+    add_label(18, 'Enter a Campground Address', 30, 5)
+    @address_input = add_text_field(frame: [[10, 40], [245, 30]])
     @address_input.delegate = self
     button = UIButton.buttonWithType UIButtonTypeRoundedRect
     button.addTarget(self, action:"set_address", forControlEvents: UIControlEventTouchDown)
     button.setTitle('Save', forState: UIControlStateNormal)
     button.frame = CGRectMake(265, 45, 50, 30)
     view.addSubview(button)
+  end
+
+  def reset_buttons
+    add_label(18, 'Reset Item List Data Storage', 30, 75)
+    add_reset_button('supplies', 20, 110)
+    add_reset_button('food', 180, 110)
+  end
+
+  def reset_food
+    show_alert('Food', "Selecting 'Confirm' will delete all of your current 'Food' items", 'Confirm')
+  end
+
+  def reset_supplies
+    show_alert('Supplies', "Selecting 'Confirm' will delete all of your current 'Supplies' items", 'Confirm')
   end
 
   def set_address
@@ -36,7 +43,39 @@ class SettingsController < UIViewController
     set_address unless text_field != @address_input
   end
 
+  def alertView(alertView, didDismissWithButtonIndex:buttonIndex)
+    if alertView.title.lowercaseString == 'food'
+      FoodItems.delete unless buttonIndex != 1
+    elsif alertView.title.lowercaseString == 'supplies'
+      SuppliesItems.delete unless buttonIndex != 1
+    end
+  end
+
 private
+  def show_alert(title, message, button)
+    alert = UIAlertView.alloc.initWithTitle(title, message:message, delegate:self, cancelButtonTitle:"Cancel", otherButtonTitles:'Confirm', nil)
+    alert.show
+  end
+
+  def add_reset_button(controller, x, y)
+    button = UIButton.buttonWithType UIButtonTypeRoundedRect
+    button.addTarget(self, action: "reset_#{controller}", forControlEvents: UIControlEventTouchDown)
+    button.setTitle("Reset #{controller.capitalizedString}", forState: UIControlStateNormal)
+    button.frame = CGRectMake(x, y, 120, 30)
+    view.addSubview(button)
+  end
+
+  def add_label(font, text, x, y)
+    label = UILabel.new
+    label.font = UIFont.systemFontOfSize(font)
+    label.text = text
+    label.textAlignment = UITextAlignmentCenter
+    label.textColor = UIColor.blackColor
+    label.backgroundColor = UIColor.clearColor
+    label.frame = [[x, y], [250, 40]]
+    view.addSubview(label)
+  end
+
   def add_text_field(params)
     text_field = UITextField.new
     text_field.font = UIFont.systemFontOfSize(16)
@@ -45,7 +84,6 @@ private
     text_field.textColor = UIColor.blackColor
     text_field.backgroundColor = UIColor.whiteColor
     text_field.borderStyle = UITextBorderStyleRoundedRect
-    text_field.keyboardType = params[:keyboardType] if params[:keyboardType]
     text_field.frame = params[:frame]
     view.addSubview(text_field)
     text_field
