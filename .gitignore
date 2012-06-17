@@ -23,3 +23,4 @@ build/
 vendor/NanoStoreInMotion/
 vendor/Podfile.lock
 vendor/Pods/
+.dat*
