@@ -1,4 +1,4 @@
-class FoodItemController < UIViewController
+class SuppliesItemController < UIViewController
   attr_accessor :window
 
   def loadView
@@ -12,7 +12,7 @@ class FoodItemController < UIViewController
   end
 
   def viewWillAppear(animated)
-    navigationItem.title = 'New Food Item'
+    navigationItem.title = 'New Supplies Item'
     navigationItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemCancel, target:self, action:'cancel')
     navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemSave, target:self, action:'save')
     navigationController.setNavigationBarHidden(false, animated:true)
@@ -28,7 +28,7 @@ class FoodItemController < UIViewController
   def save
     return if !@name.text || @name.text.length < 1
     return if !@quantity.text || @quantity.text.length < 1
-    FoodItems.create(:name => @name.text, :quantity => @quantity.text, :created_at => Time.now)
+    SuppliesItems.create(:name => @name.text, :quantity => @quantity.text, :created_at => Time.now)
     navigationController.popViewControllerAnimated(true)
   end
 

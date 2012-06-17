@@ -16,8 +16,14 @@ class AppDelegate
     @foodController.item = FoodItemController.alloc.init
     @foodController.window = @window
 
+    @suppliesController = SuppliesController.alloc.init
+    @suppliesController.tabBarItem.title = 'Supplies'
+    @suppliesController.tabBarItem.image = UIImage.imageNamed('list.png')
+    @suppliesController.item = SuppliesItemController.alloc.init
+    @suppliesController.window = @window
+
     tabbar = UITabBarController.alloc.init
-    tabbar.viewControllers = [@mapController,@foodController]
+    tabbar.viewControllers = [@mapController,@suppliesController,@foodController]
     tabbar.selectedIndex = 0
 
     @window.rootViewController = UINavigationController.alloc.initWithRootViewController(tabbar)
