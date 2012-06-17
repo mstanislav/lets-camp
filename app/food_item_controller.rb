@@ -7,8 +7,8 @@ class FoodItemController < UIViewController
   end
 
   def viewDidLoad
-    @item = create_text_field(placeholder: 'Enter an item name', frame: [[10, 20], [300, 30]])
-    @quantity = create_text_field(placeholder: 'Enter a quantity', frame: [[10, 90], [300, 30]])
+    @name = create_text_field(placeholder: 'Enter an item name', frame: [[10, 20], [300, 30]])
+    @quantity = create_text_field(placeholder: 'Enter am item quantity', frame: [[10, 90], [300, 30]])
   end
 
   def viewWillAppear(animated)
@@ -17,8 +17,7 @@ class FoodItemController < UIViewController
     navigationItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemSave, target:self, action:'save')
     navigationController.setNavigationBarHidden(false, animated:true)
 
-    @item.text = nil
-    @quantity.text = nil
+    @name.text = @quantity.text = nil
   end
 
   def cancel
@@ -26,10 +25,9 @@ class FoodItemController < UIViewController
   end
 
   def save
-    return if !@item.text || @item.text.length < 1
+    return if !@name.text || @name.text.length < 1
     return if !@quantity.text || @quantity.text.length < 1
-
-    # TODO: ADD ITEM
+    FoodItems.create(:name => @name.text, :quantity => @quantity.text, :created_at => Time.now)
     navigationController.popViewControllerAnimated(true)
   end
 

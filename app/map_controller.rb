@@ -4,9 +4,9 @@ class MapController < UIViewController
   $default_address = '1600 Pennsylvania Ave NW Washington DC'
 
   def viewDidLoad
-    address = MapPin.all.first.address 
+    address = MapPin.all.size > 0 ? MapPin.all.first.address : $default_address
 
-    if address == nil
+    if address == $default_address
       MapPin.create(:address => $default_address, :created_at => Time.now)
       address = MapPin.all.first.address 
     end
@@ -15,6 +15,10 @@ class MapController < UIViewController
   end
 
   def viewWillAppear(animated)
+    loadNavBar
+  end
+
+  def loadNavBar
     @window.rootViewController.navigationBar.topItem.title = "Let's Camp"
     @window.rootViewController.navigationBar.topItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Settings', style: 0, target: UIApplication.sharedApplication.delegate, action: "settings")
     @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil

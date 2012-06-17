@@ -24,8 +24,7 @@ class AppDelegate
     @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
 
-    @window.rootViewController.navigationBar.topItem.title = "Let's Camp"
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Settings', style: 0, target: self, action: "settings")
+    @mapController.loadNavBar
   end
 
   def settings

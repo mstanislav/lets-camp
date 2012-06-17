@@ -29,6 +29,7 @@ class SettingsController < UIViewController
     @address_input.resignFirstResponder
     address = @address_input.text != '' ? @address_input.text : MapPin.all.first.address
     @map.drawMap(address)
+    navigationController.popViewControllerAnimated(true)
   end
 
   def textFieldShouldReturn(text_field)

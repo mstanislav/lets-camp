@@ -12,6 +12,6 @@ Motion::Project::App.setup do |app|
   app.frameworks += ['CoreLocation', 'MapKit', 'CoreData', 'QuartzCore','CoreImage']
 
   app.pods do
-    dependency 'NanoStore', '~> 2.1.4'
+    dependency 'NanoStore'
   end
 end
