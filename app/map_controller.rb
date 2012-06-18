@@ -15,11 +15,12 @@ class MapController < UIViewController
   end
 
   def viewWillAppear(animated)
+    drawMap(MapPin.all.first.address)
     loadNavBar
   end
 
   def loadNavBar
-    @window.rootViewController.navigationBar.topItem.title = "Let's Camp"
+    @window.rootViewController.navigationBar.topItem.title = "Campground Map"
     @window.rootViewController.navigationBar.topItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Settings', style: 0, target: UIApplication.sharedApplication.delegate, action: "settings")
     @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
   end
@@ -83,7 +84,7 @@ class MapController < UIViewController
     map.setRegion(region, animated: "YES")
   end
 
-  def setPin(map, coordinate)
+  def setPin(map, coordinate, title = 'Campground')
     marker = MKPointAnnotation.alloc.init
     marker.setCoordinate(coordinate)
 
@@ -91,7 +92,7 @@ class MapController < UIViewController
     pin_view.animatesDrop = true
 
     map.addAnnotation(marker)
-    marker.setTitle('Campground')
+    marker.setTitle(title)
   end
 
 end

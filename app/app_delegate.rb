@@ -10,6 +10,13 @@ class AppDelegate
     @mapController.navigationItem.title = "Let's Camp"
     @mapController.window = @window
 
+    @campgroundController = CampgroundController.alloc.init
+    @campgroundController.tabBarItem.title = 'Campgrounds'
+    @campgroundController.tabBarItem.image = UIImage.imageNamed('camp.png')
+    @campgroundController.navigationItem.title = "Campground Search"
+    @campgroundController.window = @window
+    @campgroundController.map = @mapController
+
     @foodController = FoodController.alloc.init
     @foodController.tabBarItem.title = 'Food'
     @foodController.tabBarItem.image = UIImage.imageNamed('pizza.png')
@@ -23,7 +30,7 @@ class AppDelegate
     @suppliesController.window = @window
 
     tabbar = UITabBarController.alloc.init
-    tabbar.viewControllers = [@mapController,@suppliesController,@foodController]
+    tabbar.viewControllers = [@mapController,@campgroundController,@suppliesController,@foodController]
     tabbar.selectedIndex = 0
 
     @window.rootViewController = UINavigationController.alloc.initWithRootViewController(tabbar)
@@ -31,6 +38,7 @@ class AppDelegate
     @window.makeKeyAndVisible
 
     @mapController.loadNavBar
+    @campgroundController.tabbar = tabbar
   end
 
   def settings
