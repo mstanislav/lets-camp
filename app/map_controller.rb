@@ -2,51 +2,43 @@ class MapController < UIViewController
   attr_accessor :window
 
   $default_address = '1600 Pennsylvania Ave NW Washington DC'
+  $default_map_type = 2
 
   def viewDidLoad
-    address = MapPin.all.size > 0 ? MapPin.all.first.address : $default_address
-
-    if address == $default_address
-      MapPin.create(:address => $default_address, :created_at => Time.now)
-      address = MapPin.all.first.address 
-    end
-
-    drawMap(address)
+    drawMap
   end
 
   def viewWillAppear(animated)
-    drawMap(MapPin.all.first.address)
+    drawMap
     loadNavBar
   end
 
   def loadNavBar
-    @window.rootViewController.navigationBar.topItem.title = "Campground Map"
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Settings', style: 0, target: UIApplication.sharedApplication.delegate, action: "settings")
+    @window.rootViewController.navigationBar.topItem.title = 'Campground Map'
+    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Settings', style: 0, target: UIApplication.sharedApplication.delegate, action: 'settings')
     @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
   end
 
-  def drawMap(address)
-    saveMapPin(address)
+  def drawMap
+    MapPin.create(:address => $default_address, :created_at => Time.now) unless MapPin.all.size > 0
+    MapType.create(:type => $default_map_type, :created_at => Time.now) unless MapType.all.size > 0
 
-    @@lat, @@lng = getCoordinates(view.url_encode(address))
+    @@lat, @@lng = getCoordinates(view.url_encode(MapPin.all.first.address))
     checkCoordinates
     coordinate = CLLocationCoordinate2D.new(@@lat,@@lng)
 
     mapView = MKMapView.alloc.initWithFrame(view.bounds)
+    mapView.mapType = MapType.all.first.type
     mapView.delegate = self
 
+    view.addSubview(mapView)
     setRegion(mapView, coordinate)
     setPin(mapView, coordinate)
-  
-    view.addSubview(mapView)
   end
 
   def checkCoordinates
     if @@lat == nil or @@lng == nil
-      pin = MapPin.all.first
-      pin.address = $default_address
-      pin.save
-
+      saveMapPin($default_address)
       @@lat, @@lng = getCoordinates(view.url_encode($default_address))
     end
   end
@@ -55,6 +47,12 @@ class MapController < UIViewController
     pin = MapPin.all.first
     pin.address = address
     pin.save
+  end
+
+  def saveMapType(selection)
+    type = MapType.all.first
+    type.type = selection
+    type.save
   end
 
   def getCoordinates(address)
@@ -89,7 +87,6 @@ class MapController < UIViewController
     marker.setCoordinate(coordinate)
 
     pin_view = MKPinAnnotationView.alloc.initWithAnnotation(marker, reuseIdentifier: "id")
-    pin_view.animatesDrop = true
 
     map.addAnnotation(marker)
     marker.setTitle(title)

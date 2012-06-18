@@ -3,6 +3,11 @@ class MapPin < NanoStore::Model
   attribute :created_at
 end
 
+class MapType < NanoStore::Model
+  attribute :type
+  attribute :created_at
+end
+
 class SuppliesItems < NanoStore::Model
   attribute :name
   attribute :quantity
