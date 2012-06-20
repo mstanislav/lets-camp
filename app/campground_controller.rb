@@ -5,7 +5,7 @@ class CampgroundController < UITableViewController
   $default_campground_type = 2001
   $default_campground_state = 'MI'
   $campground_site_types = siteTypes = { 0 => '2001', 1 => '1001', 2 => '2003', 3 => '3001', 4 => '2004' }
-
+  
   def viewWillAppear(animated)
     @items = []
     getCampgrounds
@@ -14,17 +14,16 @@ class CampgroundController < UITableViewController
 
   def getCampgrounds
     CampgroundSearch.create(:type => $default_campground_type, :state => $default_campground_state, :created_at => Time.now) unless CampgroundSearch.all.size > 0
-
     BubbleWrap::HTTP.get("http://api.amp.active.com/camping/campgrounds?pstate=#{CampgroundSearch.all.first.state}&siteType=#{CampgroundSearch.all.first.type}&api_key=#{$api_key}") do |response|
       if response.ok?
         data = Hpple.XML(response.body.to_str)
         data.xpath("/resultset/result").each do |item|
           @items << item
         end
-        view.reloadData
       else
-        raise "Unable to downlod data"
+        @items << { 'facilityName' => 'Unable to load data.' }
       end
+      view.reloadData
     end
   end
 
@@ -35,19 +34,19 @@ class CampgroundController < UITableViewController
         result = data.xpath("/detailDescription/address").first
         @map.saveMapPin("#{result['streetAddress']} #{result['state']} #{result['zip']}")
         @tabbar.selectedIndex = 0
-      else
-        raise "Unable to downlod data"
       end
     end
   end
 
   def saveCampgroundType(selection)
+    CampgroundSearch.create(:type => $default_campground_type, :state => $default_campground_state, :created_at => Time.now) unless CampgroundSearch.all.size > 0
     setting = CampgroundSearch.all.first
     setting.type = selection
     setting.save
   end
 
   def saveCampgroundState(selection)
+    CampgroundSearch.create(:type => $default_campground_type, :state => $default_campground_state, :created_at => Time.now) unless CampgroundSearch.all.size > 0
     setting = CampgroundSearch.all.first
     setting.state = selection
     setting.save

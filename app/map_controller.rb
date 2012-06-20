@@ -25,15 +25,33 @@ class MapController < UIViewController
 
     @@lat, @@lng = getCoordinates(view.url_encode(MapPin.all.first.address))
     checkCoordinates
-    coordinate = CLLocationCoordinate2D.new(@@lat,@@lng)
+    if @@lat != nil and @@lng != nil
+      coordinate = CLLocationCoordinate2D.new(@@lat,@@lng) 
 
-    mapView = MKMapView.alloc.initWithFrame(view.bounds)
-    mapView.mapType = MapType.all.first.type
-    mapView.delegate = self
+      mapView = MKMapView.alloc.initWithFrame(view.bounds)
+      mapView.mapType = MapType.all.first.type
+      mapView.delegate = self
 
-    view.addSubview(mapView)
-    setRegion(mapView, coordinate)
-    setPin(mapView, coordinate)
+      view.addSubview(mapView)
+      setRegion(mapView, coordinate)
+      setPin(mapView, coordinate)
+    else
+      mapLoadFailed
+      return false
+    end
+  end
+
+  def mapLoadFailed
+    label = UILabel.new
+    label.font = UIFont.systemFontOfSize(26)
+    label.text = "Unable to load map data.\nPlease check your internet connection."
+    label.textAlignment = UITextAlignmentCenter
+    label.textColor = UIColor.whiteColor
+    label.backgroundColor = UIColor.clearColor
+    label.lineBreakMode = UILineBreakModeWordWrap
+    label.numberOfLines = 0
+    label.frame = [[10, 110], [300, 90]]
+    view.addSubview(label)
   end
 
   def checkCoordinates
@@ -60,14 +78,8 @@ class MapController < UIViewController
 
     error_ptr = Pointer.new(:object)
     data = NSData.alloc.initWithContentsOfURL(NSURL.URLWithString(url), options:NSDataReadingUncached, error:error_ptr)
-    unless data
-      raise error_ptr[0]
-    end
 
-    json = NSJSONSerialization.JSONObjectWithData(data, options:0, error:error_ptr)
-    unless json
-      raise error_ptr[0]
-    end
+    json = NSJSONSerialization.JSONObjectWithData(data, options:0, error:error_ptr) unless data == nil
    
     if json == nil or json['results'].size < 1
       return false
