@@ -45,6 +45,7 @@ class AppDelegate
     settingsController = SettingsController.alloc.init
     settingsController.window = @window
     settingsController.map = @mapController
+    settingsController.camp = @campgroundController
 
     @window.rootViewController.pushViewController(settingsController, animated: true)
     @window.rootViewController.navigationBar.topItem.title = 'Settings'

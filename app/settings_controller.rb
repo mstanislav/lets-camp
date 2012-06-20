@@ -1,11 +1,12 @@
 class SettingsController < UIViewController
-  attr_accessor :window, :map
+  attr_accessor :window, :map, :camp
 
   def viewDidLoad
     self.view.backgroundColor = UIColor.underPageBackgroundColor
     address_input
     reset_buttons
     mapTypeSelector
+    siteTypeSelector
   end
 
   def address_input
@@ -25,19 +26,34 @@ class SettingsController < UIViewController
       w.frame = [[0, 110], [view.bounds.size.width, 30]]
       w.segmentedControlStyle = UISegmentedControlStyleBar
       w.addTarget(self, action:'mapSelect:', forControlEvents:UIControlEventValueChanged)
+      w.selectedSegmentIndex = MapType.all.first.type != nil ? MapType.all.first.type : $default_map_type
       view.addSubview(w)
     end
   end
 
   def mapSelect(selector)
     @map.saveMapType(@mapType.selectedSegmentIndex) 
-    navigationController.popViewControllerAnimated(true)
+  end
+
+  def siteTypeSelector
+    add_label(18, 'Campground Site Need', 30, 150)
+    @siteType = UISegmentedControl.alloc.initWithItems(['RV', 'Cabin', 'Tent', 'Horse', 'Boat']).tap do |w|
+      w.frame = [[0, 185], [view.bounds.size.width, 30]]
+      w.segmentedControlStyle = UISegmentedControlStyleBar
+      w.addTarget(self, action:'siteSelect:', forControlEvents:UIControlEventValueChanged)
+      w.selectedSegmentIndex = CampgroundSearch.all.first.type != nil ? $campground_site_types.invert[CampgroundSearch.all.first.type] : $campground_site_types.invert[$default_campground_type]
+      view.addSubview(w)
+    end
+  end
+
+  def siteSelect(selector)
+    @camp.saveCampgroundType($campground_site_types[@siteType.selectedSegmentIndex])
   end
 
   def reset_buttons
-    add_label(18, 'Reset Item List Data Storage', 30, 150)
-    add_reset_button('supplies', 20, 185)
-    add_reset_button('food', 180, 185)
+    add_label(18, 'Reset Item List Data Storage', 30, 225)
+    add_reset_button('supplies', 20, 260)
+    add_reset_button('food', 180, 260)
   end
 
   def reset_food

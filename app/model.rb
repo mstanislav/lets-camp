@@ -19,3 +19,9 @@ class FoodItems < NanoStore::Model
   attribute :quantity
   attribute :created_at
 end
+
+class CampgroundSearch < NanoStore::Model
+  attribute :type
+  attribute :state
+  attribute :created_at
+end

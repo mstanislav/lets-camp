@@ -2,15 +2,20 @@ class CampgroundController < UITableViewController
   attr_accessor :window, :map, :tabbar
   
   $api_key = 'k4nh5c33nrjf9xea6k63f2vf'
+  $default_campground_type = 2001
+  $default_campground_state = 'MI'
+  $campground_site_types = siteTypes = { 0 => '2001', 1 => '1001', 2 => '2003', 3 => '3001', 4 => '2004' }
 
   def viewWillAppear(animated)
     @items = []
-    getCampgrounds('MI', '2003')
+    getCampgrounds
     loadNavBar
   end
 
-  def getCampgrounds(state, type)
-    BubbleWrap::HTTP.get("http://api.amp.active.com/camping/campgrounds?pstate=#{state}&siteType=#{type}&api_key=#{$api_key}") do |response|
+  def getCampgrounds
+    CampgroundSearch.create(:type => $default_campground_type, :state => $default_campground_state, :created_at => Time.now) unless CampgroundSearch.all.size > 0
+
+    BubbleWrap::HTTP.get("http://api.amp.active.com/camping/campgrounds?pstate=#{CampgroundSearch.all.first.state}&siteType=#{CampgroundSearch.all.first.type}&api_key=#{$api_key}") do |response|
       if response.ok?
         data = Hpple.XML(response.body.to_str)
         data.xpath("/resultset/result").each do |item|
@@ -34,6 +39,18 @@ class CampgroundController < UITableViewController
         raise "Unable to downlod data"
       end
     end
+  end
+
+  def saveCampgroundType(selection)
+    setting = CampgroundSearch.all.first
+    setting.type = selection
+    setting.save
+  end
+
+  def saveCampgroundState(selection)
+    setting = CampgroundSearch.all.first
+    setting.state = selection
+    setting.save
   end
 
   def loadNavBar
