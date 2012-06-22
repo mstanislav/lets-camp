@@ -5,43 +5,49 @@ class MapController < UIViewController
   $default_map_type = 2
 
   def viewDidLoad
-    drawMap
+    draw_map
   end
 
   def viewWillAppear(animated)
-    drawMap
-    loadNavBar
+    draw_map
+    load_navbar
   end
 
-  def loadNavBar
+  def set_region(map, coordinate)
+    span = MKCoordinateSpan.new(0.1, 0.1)
+    region = MKCoordinateRegion.new(coordinate, span)
+    map.setRegion(region, animated: 'YES')
+  end
+
+  def load_navbar
     @window.rootViewController.navigationBar.topItem.title = 'Campground Map'
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = UIBarButtonItem.alloc.initWithTitle('Settings', style: 0, target: UIApplication.sharedApplication.delegate, action: 'settings')
+    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = nil
     @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
   end
 
-  def drawMap
+  def draw_map
     MapPin.create(:address => $default_address, :created_at => Time.now) unless MapPin.all.size > 0
     MapType.create(:type => $default_map_type, :created_at => Time.now) unless MapType.all.size > 0
 
-    @@lat, @@lng = getCoordinates(view.url_encode(MapPin.all.first.address))
-    checkCoordinates
+    @@lat, @@lng = get_coordinates(view.url_encode(MapPin.all.first.address))
+    check_coordinates
+
     if @@lat != nil and @@lng != nil
-      coordinate = CLLocationCoordinate2D.new(@@lat,@@lng) 
+      coordinate = CLLocationCoordinate2D.new(@@lat, @@lng) 
 
-      mapView = MKMapView.alloc.initWithFrame(view.bounds)
-      mapView.mapType = MapType.all.first.type
-      mapView.delegate = self
+      map = MKMapView.alloc.initWithFrame(view.bounds)
+      map.mapType = MapType.all.first.type
+      map.delegate = self
 
-      view.addSubview(mapView)
-      setRegion(mapView, coordinate)
-      setPin(mapView, coordinate)
+      view.addSubview(map)
+      set_region(map, coordinate)
+      set_pin(map, coordinate)
     else
-      mapLoadFailed
-      return false
+      map_load_failed
     end
   end
 
-  def mapLoadFailed
+  def map_load_failed
     label = UILabel.new
     label.font = UIFont.systemFontOfSize(26)
     label.text = "Unable to load map data.\nPlease check your internet connection."
@@ -54,26 +60,26 @@ class MapController < UIViewController
     view.addSubview(label)
   end
 
-  def checkCoordinates
+  def check_coordinates
     if @@lat == nil or @@lng == nil
-      saveMapPin($default_address)
+      set_map_pin($default_address)
       @@lat, @@lng = getCoordinates(view.url_encode($default_address))
     end
   end
 
-  def saveMapPin(address)
+  def set_map_pin(address)
     pin = MapPin.all.first
     pin.address = address
     pin.save
   end
 
-  def saveMapType(selection)
+  def set_map_type(selection)
     type = MapType.all.first
     type.type = selection
     type.save
   end
 
-  def getCoordinates(address)
+  def get_coordinates(address)
     url = "http://maps.google.com/maps/api/geocode/json?address=#{address}&sensor=false"
 
     error_ptr = Pointer.new(:object)
@@ -88,20 +94,12 @@ class MapController < UIViewController
     return [json['results'].first[:geometry][:location][:lat],json['results'].first[:geometry][:location][:lng]]
   end
 
-  def setRegion(map, coordinate)
-    span = MKCoordinateSpan.new(0.1, 0.1)
-    region = MKCoordinateRegion.new(coordinate, span)
-    map.setRegion(region, animated: "YES")
-  end
-
-  def setPin(map, coordinate, title = 'Campground')
+  def set_pin(map, coordinate, title = 'Campground')
     marker = MKPointAnnotation.alloc.init
     marker.setCoordinate(coordinate)
-
-    pin_view = MKPinAnnotationView.alloc.initWithAnnotation(marker, reuseIdentifier: "id")
-
-    map.addAnnotation(marker)
     marker.setTitle(title)
+    map.addAnnotation(marker)
+    MKPinAnnotationView.alloc.initWithAnnotation(marker, reuseIdentifier: 'id') 
   end
 
 end

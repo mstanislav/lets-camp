@@ -3,18 +3,8 @@ class SuppliesController < UITableViewController
 
   def viewWillAppear(animated)
     @items = SuppliesItems.all
-    loadNavBar
+    load_navbar
     view.reloadData
-  end
-
-  def loadNavBar
-    @window.rootViewController.navigationBar.topItem.title = 'Supplies'
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = editButtonItem
-    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemAdd, target:self, action:'addSuppliesItem')
-  end
-
-  def addSuppliesItem
-    navigationController.pushViewController(@item, animated:true)
   end
 
   def tableView(tableView, numberOfRowsInSection:section)
@@ -30,9 +20,18 @@ class SuppliesController < UITableViewController
   end
 
   def tableView(tableView, commitEditingStyle:editingStyle, forRowAtIndexPath:indexPath)
-    item = SuppliesItems.find(:name, NSFEqualTo, @items[indexPath.row].name).first
-    item.delete
+    SuppliesItems.find(:name, NSFEqualTo, @items[indexPath.row].name).first.delete unless SuppliesItems.find(:name, NSFEqualTo, @items[indexPath.row].name).size == 0
     @items = SuppliesItems.all
     tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation:UITableViewRowAnimationFade)
+  end
+
+  def load_navbar
+    @window.rootViewController.navigationBar.topItem.title = 'Supplies'
+    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = editButtonItem
+    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemAdd, target:self, action:'add_supplies_item')
+  end
+
+  def add_supplies_item
+    navigationController.pushViewController(@item, animated:true)
   end
 end

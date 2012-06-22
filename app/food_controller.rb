@@ -3,18 +3,8 @@ class FoodController < UITableViewController
 
   def viewWillAppear(animated)
     @items = FoodItems.all
-    loadNavBar
+    load_navbar
     view.reloadData
-  end
-
-  def loadNavBar
-    @window.rootViewController.navigationBar.topItem.title = 'Food'
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = editButtonItem
-    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemAdd, target:self, action:'addFoodItem')
-  end
-
-  def addFoodItem
-    navigationController.pushViewController(@item, animated:true)
   end
 
   def tableView(tableView, numberOfRowsInSection:section)
@@ -30,9 +20,18 @@ class FoodController < UITableViewController
   end
 
   def tableView(tableView, commitEditingStyle:editingStyle, forRowAtIndexPath:indexPath)
-    item = FoodItems.find(:name, NSFEqualTo, @items[indexPath.row].name).first
-    item.delete
+    FoodItems.find(:name, NSFEqualTo, @items[indexPath.row].name).first.delete unless FoodItems.find(:name, NSFEqualTo, @items[indexPath.row].name).size == 0
     @items = FoodItems.all
     tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation:UITableViewRowAnimationFade)
+  end
+
+  def load_navbar
+    @window.rootViewController.navigationBar.topItem.title = 'Food'
+    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = editButtonItem
+    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemAdd, target:self, action:'add_food_item')
+  end
+
+  def add_food_item
+    navigationController.pushViewController(@item, animated:true)
   end
 end

@@ -19,53 +19,89 @@ class SettingsController < UIViewController
     self.view.backgroundColor = UIColor.underPageBackgroundColor
     address_input
     reset_buttons
-    mapTypeSelector
-    siteTypeSelector
-    stateSelector
+    map_type_selector
+    site_type_selector
+    state_selector
+  end
+
+  def viewWillAppear(animated)
+    @address_input.text = MapPin.all.first.address
+    @window.rootViewController.navigationBar.topItem.title = 'Settings'
+    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = nil
+    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
+  end
+
+  def numberOfComponentsInPickerView(pickerView)
+    1
+  end
+
+  def pickerView(pickerView, numberOfRowsInComponent:component)
+    $states_array.size
+  end
+
+  def pickerView(pickerView, titleForRow:row, forComponent:component)
+    $states_array[row].to_s
+  end
+
+  def pickerView(pickerView, didSelectRow:row, inComponent:component)
+    @state.text = $states_array[row]
+  end
+
+  def textFieldShouldReturn(text_field)
+    set_address unless text_field != @address_input
+    set_campground_state unless text_field != @state
+  end
+
+  def alertView(alertView, didDismissWithButtonIndex:buttonIndex)
+    if alertView.title.lowercaseString == 'food'
+      FoodItems.delete unless buttonIndex != 1
+    elsif alertView.title.lowercaseString == 'supplies'
+      SuppliesItems.delete unless buttonIndex != 1
+    end
   end
 
   def address_input
     add_label(18, 'Enter a Campground Address', 25, 5)
     @address_input = add_text_field(text: MapPin.all.first.address, frame: [[10, 40], [265, 25]])
     @address_input.delegate = self
-    button = UIButton.buttonWithType UIButtonTypeRoundedRect
-    button.addTarget(self, action:"set_address", forControlEvents: UIControlEventTouchDown)
+    button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+    button.addTarget(self, action:'set_address', forControlEvents: UIControlEventTouchDown)
     button.setTitle('Set', forState: UIControlStateNormal)
     button.frame = CGRectMake(280, 40, 30, 25)
     view.addSubview(button)
   end
 
-  def mapTypeSelector
+  def map_type_selector
     add_label(18, 'Campground Map Style', 25, 75)
     @mapType = UISegmentedControl.alloc.initWithItems(['Map', 'Satellite', 'Hybrid', 'Topological']).tap do |w|
       w.frame = [[10, 110], [view.bounds.size.width - 20, 30]]
       w.segmentedControlStyle = UISegmentedControlStyleBar
-      w.addTarget(self, action:'mapSelect:', forControlEvents:UIControlEventValueChanged)
+      w.addTarget(self, action:'map_select', forControlEvents:UIControlEventValueChanged)
       w.selectedSegmentIndex = MapType.all.first.type != nil ? MapType.all.first.type : $default_map_type
       view.addSubview(w)
     end
   end
 
-  def mapSelect(selector)
-    @map.saveMapType(@mapType.selectedSegmentIndex) 
+  def map_select
+    @map.set_map_type(@mapType.selectedSegmentIndex) 
   end
 
-  def siteTypeSelector
+  def site_type_selector
     add_label(18, 'Campground Site Need', 25, 150)
     @siteType = UISegmentedControl.alloc.initWithItems(['RV', 'Cabin', 'Tent', 'Horse', 'Boat']).tap do |w|
       w.frame = [[10, 185], [view.bounds.size.width - 20, 30]]
       w.segmentedControlStyle = UISegmentedControlStyleBar
-      w.addTarget(self, action:'siteSelect:', forControlEvents:UIControlEventValueChanged)
+      w.addTarget(self, action:'site_select', forControlEvents:UIControlEventValueChanged)
       w.selectedSegmentIndex = CampgroundSearch.all.size > 0 ? $campground_site_types.invert[CampgroundSearch.all.first.type].to_i : $campground_site_types.invert[$default_campground_type].to_i
       view.addSubview(w)
     end
   end
 
-  def siteSelect(selector)
-    @camp.saveCampgroundType($campground_site_types[@siteType.selectedSegmentIndex])
+  def site_select
+    @camp.set_campground_type($campground_site_types[@siteType.selectedSegmentIndex])
   end
 
-  def stateSelector
+  def state_selector
     add_label(18, 'State/Province for Campgrounds', 20, 225)
     @picker = UIPickerView.new
     @picker.showsSelectionIndicator = true
@@ -85,23 +121,7 @@ class SettingsController < UIViewController
 
   def set_campground_state
     @state.resignFirstResponder
-    @camp.saveCampgroundState($states.invert[@state.text])
-  end
-
-  def numberOfComponentsInPickerView(pickerView)
-    1
-  end
-
-  def pickerView(pickerView, numberOfRowsInComponent:component)
-    $states_array.size
-  end
-
-  def pickerView(pickerView, titleForRow:row, forComponent:component)
-    $states_array[row].to_s
-  end
-
-  def pickerView(pickerView, didSelectRow:row, inComponent:component)
-    @state.text = $states_array[row]
+    @camp.set_campground_state($states.invert[@state.text])
   end
 
   def reset_buttons
@@ -121,32 +141,19 @@ class SettingsController < UIViewController
   def set_address
     @address_input.resignFirstResponder
     address = @address_input.text != '' ? @address_input.text : MapPin.all.first.address
-    @map.saveMapPin(address)
-    @map.drawMap
-  end
-
-  def textFieldShouldReturn(text_field)
-    set_address unless text_field != @address_input
-    set_campground_state unless text_field != @state
-  end
-
-  def alertView(alertView, didDismissWithButtonIndex:buttonIndex)
-    if alertView.title.lowercaseString == 'food'
-      FoodItems.delete unless buttonIndex != 1
-    elsif alertView.title.lowercaseString == 'supplies'
-      SuppliesItems.delete unless buttonIndex != 1
-    end
+    @map.set_map_pin(address)
+    @map.draw_map
   end
 
 private
   def show_alert(title, message, button)
-    alert = UIAlertView.alloc.initWithTitle(title, message:message, delegate:self, cancelButtonTitle:"Cancel", otherButtonTitles:'Confirm', nil)
+    alert = UIAlertView.alloc.initWithTitle(title, message:message, delegate:self, cancelButtonTitle:'Cancel', otherButtonTitles:'Confirm', nil)
     alert.show
   end
 
   def add_reset_button(controller, x, y)
-    button = UIButton.buttonWithType UIButtonTypeRoundedRect
-    button.addTarget(self, action: "reset_#{controller}", forControlEvents: UIControlEventTouchDown)
+    button = UIButton.buttonWithType(UIButtonTypeRoundedRect)
+    button.addTarget(self, action:"reset_#{controller}", forControlEvents: UIControlEventTouchDown)
     button.setTitle("Reset #{controller.capitalizedString}", forState: UIControlStateNormal)
     button.frame = CGRectMake(x, y, 120, 30)
     view.addSubview(button)

@@ -1,6 +1,6 @@
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    NanoStore.shared_store = NanoStore.store(:file, App.documents_path + "/letscamp.db")
+    NanoStore.shared_store = NanoStore.store(:file, App.documents_path + '/letscamp.db')
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
@@ -29,25 +29,22 @@ class AppDelegate
     @suppliesController.item = SuppliesItemController.alloc.init
     @suppliesController.window = @window
 
+    @settingsController = SettingsController.alloc.init
+    @settingsController.tabBarItem.title = 'Settings'
+    @settingsController.tabBarItem.image = UIImage.imageNamed('gear.png')
+    @settingsController.window = @window
+    @settingsController.map = @mapController
+    @settingsController.camp = @campgroundController
+
     tabbar = UITabBarController.alloc.init
-    tabbar.viewControllers = [@mapController,@campgroundController,@suppliesController,@foodController]
+    tabbar.viewControllers = [@mapController,@campgroundController,@suppliesController,@foodController,@settingsController]
     tabbar.selectedIndex = 0
 
     @window.rootViewController = UINavigationController.alloc.initWithRootViewController(tabbar)
     @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
 
-    @mapController.loadNavBar
+    @mapController.load_navbar
     @campgroundController.tabbar = tabbar
-  end
-
-  def settings
-    settingsController = SettingsController.alloc.init
-    settingsController.window = @window
-    settingsController.map = @mapController
-    settingsController.camp = @campgroundController
-
-    @window.rootViewController.pushViewController(settingsController, animated: true)
-    @window.rootViewController.navigationBar.topItem.title = 'Settings'
   end
 end
