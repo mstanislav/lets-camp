@@ -8,11 +8,11 @@ Let's Camp is a RubyMotion iOS application to help with planning a camping trip.
 
 Screenshots
 -----------
-![Campground Map](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Map.png)
+![Campground Map](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Map.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![Campground Search](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Search.png)
-![Supplies List](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Supplies.png)
+![Supplies List](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Supplies.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![Food List](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Food.png)
-![Settings](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Settings.png)
+![Settings](/mstanislav/lets-camp/raw/master/misc/Lets-Camp-Settings.png)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 Changelog
 ---------
