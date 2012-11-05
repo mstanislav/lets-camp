@@ -44,7 +44,6 @@ class AppDelegate
     @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
 
-    @mapController.load_navbar
     @campgroundController.tabbar = tabbar
   end
 end

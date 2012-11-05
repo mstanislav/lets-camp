@@ -4,25 +4,15 @@ class MapController < UIViewController
   $default_address = '1600 Pennsylvania Ave NW Washington DC'
   $default_map_type = 2
 
-  def viewDidLoad
-    draw_map
-  end
-
   def viewWillAppear(animated)
+    navigationController.setNavigationBarHidden(true, animated:true)
     draw_map
-    load_navbar
   end
 
   def set_region(map, coordinate)
     span = MKCoordinateSpan.new(0.1, 0.1)
     region = MKCoordinateRegion.new(coordinate, span)
     map.setRegion(region, animated: 'YES')
-  end
-
-  def load_navbar
-    @window.rootViewController.navigationBar.topItem.title = 'Campground Map'
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = nil
-    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
   end
 
   def draw_map
@@ -35,7 +25,7 @@ class MapController < UIViewController
     if @@lat != nil and @@lng != nil
       coordinate = CLLocationCoordinate2D.new(@@lat, @@lng) 
 
-      map = MKMapView.alloc.initWithFrame(view.bounds)
+      map = MKMapView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
       map.mapType = MapType.all.first.type
       map.delegate = self
 
@@ -63,7 +53,7 @@ class MapController < UIViewController
   def check_coordinates
     if @@lat == nil or @@lng == nil
       set_map_pin($default_address)
-      @@lat, @@lng = getCoordinates(view.url_encode($default_address))
+      @@lat, @@lng = get_coordinates(view.url_encode($default_address))
     end
   end
 

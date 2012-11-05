@@ -7,9 +7,9 @@ class CampgroundController < UITableViewController
   $campground_site_types = { 0 => '2001', 1 => '1001', 2 => '2003', 3 => '3001', 4 => '2004' }
   
   def viewWillAppear(animated)
+    navigationController.setNavigationBarHidden(true, animated:true)
     @items = []
     get_campgrounds
-    load_navbar
   end
 
   def tableView(tableView, numberOfRowsInSection:section)
@@ -63,9 +63,4 @@ class CampgroundController < UITableViewController
     setting.save
   end
 
-  def load_navbar
-    @window.rootViewController.navigationBar.topItem.title = 'Campground Search'
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = nil
-    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
-  end
 end

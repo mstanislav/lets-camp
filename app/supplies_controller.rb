@@ -2,6 +2,7 @@ class SuppliesController < UITableViewController
   attr_accessor :window, :item
 
   def viewWillAppear(animated)
+    navigationController.setNavigationBarHidden(false, animated:true)
     @items = SuppliesItems.all
     load_navbar
     view.reloadData

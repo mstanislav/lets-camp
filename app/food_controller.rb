@@ -2,6 +2,7 @@ class FoodController < UITableViewController
   attr_accessor :window, :item
 
   def viewWillAppear(animated)
+    navigationController.setNavigationBarHidden(false, animated:true)
     @items = FoodItems.all
     load_navbar
     view.reloadData

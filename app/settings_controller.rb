@@ -25,10 +25,8 @@ class SettingsController < UIViewController
   end
 
   def viewWillAppear(animated)
+    navigationController.setNavigationBarHidden(true, animated:true)
     @address_input.text = MapPin.all.first.address
-    @window.rootViewController.navigationBar.topItem.title = 'Settings'
-    @window.rootViewController.navigationBar.topItem.leftBarButtonItem = nil
-    @window.rootViewController.navigationBar.topItem.rightBarButtonItem = nil
   end
 
   def numberOfComponentsInPickerView(pickerView)
