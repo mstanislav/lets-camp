@@ -16,4 +16,5 @@ Screenshots
 
 Changelog
 ---------
+- v1.1: Fixed visual bug with map screen. Added app icons (thanks, Matt!). Rakefile updated for app store release.
 - v1.0: Initial feature-complete release without known bugs 
